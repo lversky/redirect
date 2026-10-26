@@ -162,7 +162,7 @@
   'use strict';
   var params = new URLSearchParams(window.location.search);
   var url = params.get('to') || params.get('url') || params.get('redirect') || params.get('target') || params.get('link');
-  var delay = parseInt(params.get('delay') || params.get('d') || '3', 10);
+  var delay = parseInt(params.get('delay') || params.get('d') || '7', 10);
   if (isNaN(delay) || delay < 0) delay = 3;
   if (delay > 30) delay = 30;
 
