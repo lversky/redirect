@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redirecting… — LZVE.ly</title>
+<meta name="description" content="You are being redirected.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --accent: #d400a8;
+    --accent-2: #8b31c9;
+    --accent-ink: #ffffff;
+    --bg: #fdfaff;
+    --bg-alt: #f6f0fa;
+    --surface: #ffffff;
+    --border: #e7dcf0;
+    --text: #241533;
+    --text-soft: #4a3a5c;
+    --muted: #6f6180;
+  }
+  [data-theme="dark"] {
+    --accent: #ff4fd8;
+    --accent-2: #a855f7;
+    --accent-ink: #1a0716;
+    --bg: #0b0710;
+    --bg-alt: #120b1a;
+    --surface: #171020;
+    --border: #2c2039;
+    --text: #f4ecf8;
+    --text-soft: #d6c9e2;
+    --muted: #a493b6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 2.5rem;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(36,21,51,.08), 0 12px 32px rgba(36,21,51,.07);
+  }
+  .icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: grid; place-items: center;
+    color: var(--accent-ink);
+    font-size: 1.5rem;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  h1 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: .5rem;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: .95rem;
+    margin-bottom: 1.5rem;
+  }
+  .target {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    word-break: break-all;
+    font-size: .9rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .target a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .target a:hover { text-decoration: underline; }
+  .countdown {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-bottom: 1.5rem;
+  }
+  .countdown strong { color: var(--accent); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .72rem 1.5rem;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: .95rem;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn:hover { opacity: .9; }
+  .error {
+    color: #e53e3e;
+    font-size: .9rem;
+  }
+  .brand {
+    margin-top: 2rem;
+    font-size: .8rem;
+    color: var(--muted);
+  }
+  .brand a { color: var(--accent); text-decoration: none; }
+</style>
+
+<script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = saved || system;
+  })();
+</script>
+</head>
+<body>
+<div class="card">
+  <div class="icon">↗</div>
+  <h1 id="title">Redirecting…</h1>
+  <p class="subtitle" id="subtitle">You are being sent to another page.</p>
+  <div class="target" id="target"></div>
+  <p class="countdown" id="countdown"></p>
+  <a class="btn" id="btn" href="#">Go now</a>
+  <p class="brand">Powered by <a href="https://lzve.living-the.life">LZVE.ly</a></p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(window.location.search);
+  var url = params.get('to') || params.get('url') || params.get('redirect') || params.get('target') || params.get('link');
+  var delay = parseInt(params.get('delay') || params.get('d') || '3', 10);
+  if (isNaN(delay) || delay < 0) delay = 3;
+  if (delay > 30) delay = 30;
+
+  var title = document.getElementById('title');
+  var subtitle = document.getElementById('subtitle');
+  var target = document.getElementById('target');
+  var countdown = document.getElementById('countdown');
+  var btn = document.getElementById('btn');
+
+  if (!url) {
+    title.textContent = 'No destination';
+    subtitle.textContent = 'No redirect URL was provided.';
+    target.innerHTML = '<span class="error">Missing ?to= or ?url= parameter</span>';
+    countdown.textContent = '';
+    btn.style.display = 'none';
+    return;
+  }
+
+  // Validate URL
+  var parsed;
+  try { parsed = new URL(url); } catch (e) { parsed = null; }
+  if (!parsed || (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')) {
+    title.textContent = 'Invalid URL';
+    subtitle.textContent = 'The redirect target is not a valid web address.';
+    target.innerHTML = '<span class="error">' + escapeHtml(url) + '</span>';
+    countdown.textContent = '';
+    btn.style.display = 'none';
+    return;
+  }
+
+  title.textContent = 'Redirecting…';
+  subtitle.textContent = 'You will be sent to:';
+  target.innerHTML = '<a href="' + escapeAttr(url) + '" rel="noopener noreferrer">' + escapeHtml(url) + '</a>';
+  btn.href = url;
+  btn.rel = 'noopener noreferrer';
+
+  var remaining = delay;
+  function tick() {
+    if (remaining <= 0) {
+      window.location.replace(url);
+      return;
+    }
+    countdown.innerHTML = 'Redirecting in <strong>' + remaining + '</strong> second' + (remaining === 1 ? '' : 's') + '…';
+    remaining--;
+    setTimeout(tick, 1000);
+  }
+  tick();
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function escapeAttr(s) {
+    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  }
+})();
+</script>
+</body>
+</html>
