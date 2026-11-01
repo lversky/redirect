@@ -1,223 +1,611 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Redirecting… — LZVE.ly</title>
-<meta name="description" content="You are being redirected.">
-<meta name="robots" content="noindex, nofollow">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-  :root {
-    --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-    --accent: #d400a8;
-    --accent-2: #8b31c9;
-    --accent-ink: #ffffff;
-    --bg: #fdfaff;
-    --bg-alt: #f6f0fa;
-    --surface: #ffffff;
-    --border: #e7dcf0;
-    --text: #241533;
-    --text-soft: #4a3a5c;
-    --muted: #6f6180;
-  }
-  [data-theme="dark"] {
-    --accent: #ff4fd8;
-    --accent-2: #a855f7;
-    --accent-ink: #1a0716;
-    --bg: #0b0710;
-    --bg-alt: #120b1a;
-    --surface: #171020;
-    --border: #2c2039;
-    --text: #f4ecf8;
-    --text-soft: #d6c9e2;
-    --muted: #a493b6;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 2.5rem;
-    max-width: 520px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 4px 14px rgba(36,21,51,.08), 0 12px 32px rgba(36,21,51,.07);
-  }
-  .icon {
-    width: 48px; height: 48px;
-    margin: 0 auto 1.5rem;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display: grid; place-items: center;
-    color: var(--accent-ink);
-    font-size: 1.5rem;
-    animation: spin 2s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  h1 {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    margin-bottom: .5rem;
-  }
-  .subtitle {
-    color: var(--muted);
-    font-size: .95rem;
-    margin-bottom: 1.5rem;
-  }
-  .target {
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    word-break: break-all;
-    font-size: .9rem;
-    color: var(--accent);
-    font-weight: 600;
-  }
-  .target a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-  .target a:hover { text-decoration: underline; }
-  .countdown {
-    color: var(--muted);
-    font-size: .85rem;
-    margin-bottom: 1.5rem;
-  }
-  .countdown strong { color: var(--accent); }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    padding: .72rem 1.5rem;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: var(--accent-ink);
-    font-weight: 600;
-    font-size: .95rem;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .btn:hover { opacity: .9; }
-  .error {
-    color: #e53e3e;
-    font-size: .9rem;
-  }
-  .brand {
-    margin-top: 2rem;
-    font-size: .8rem;
-    color: var(--muted);
-  }
-  .brand a { color: var(--accent); text-decoration: none; }
-</style>
-
-<script>
-  (function () {
-    var saved = localStorage.getItem('theme');
-    var system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    document.documentElement.dataset.theme = saved || system;
-  })();
-</script>
-</head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2SMM1F9F9C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-2SMM1F9F9C');
-</script>
-<body>
-<div class="card">
-  <div class="icon">↗</div>
-  <h1 id="title">Redirecting…</h1>
-  <p class="subtitle" id="subtitle">You are being sent to another page.</p>
-  <div class="target" id="target"></div>
-  <p class="countdown" id="countdown"></p>
-  <a class="btn" id="btn" href="#">Go now</a>
-  <p class="brand">Powered by <a href="https://lzve.living-the.life">LZVE.ly</a></p>
-</div>
-
-<script>
-(function () {
-  'use strict';
-  var params = new URLSearchParams(window.location.search);
-  var url = params.get('to') || params.get('url') || params.get('redirect') || params.get('target') || params.get('link');
-  var delay = parseInt(params.get('delay') || params.get('d') || '7', 10);
-  if (isNaN(delay) || delay < 0) delay = 3;
-  if (delay > 30) delay = 30;
-
-  var title = document.getElementById('title');
-  var subtitle = document.getElementById('subtitle');
-  var target = document.getElementById('target');
-  var countdown = document.getElementById('countdown');
-  var btn = document.getElementById('btn');
-
-  if (!url) {
-    title.textContent = 'No destination';
-    subtitle.textContent = 'No redirect URL was provided.';
-    target.innerHTML = '<span class="error">Missing ?to= or ?url= parameter</span>';
-    countdown.textContent = '';
-    btn.style.display = 'none';
-    return;
-  }
-
-  // Validate URL
-  var parsed;
-  try { parsed = new URL(url); } catch (e) { parsed = null; }
-  if (!parsed || (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')) {
-    title.textContent = 'Invalid URL';
-    subtitle.textContent = 'The redirect target is not a valid web address.';
-    target.innerHTML = '<span class="error">' + escapeHtml(url) + '</span>';
-    countdown.textContent = '';
-    btn.style.display = 'none';
-    return;
-  }
-
-  title.textContent = 'Redirecting…';
-  subtitle.textContent = 'You will be sent to:';
-  target.innerHTML = '<a href="' + escapeAttr(url) + '" rel="noopener noreferrer">' + escapeHtml(url) + '</a>';
-  btn.href = url;
-  btn.rel = 'noopener noreferrer';
-
-  var remaining = delay;
-  function tick() {
-    if (remaining <= 0) {
-      window.location.replace(url);
-      return;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Handing off… — LZVE.ly</title>
+  <meta name="description" content="A clear handoff to a destination linked from LZVE.ly.">
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      color-scheme: light;
+      --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --page: #eeece5;
+      --panel: #f8f7f1;
+      --ink: #202722;
+      --ink-soft: #4d5850;
+      --muted: #707a72;
+      --line: #c9cec5;
+      --line-strong: #aeb8ae;
+      --signal: #c7472d;
+      --signal-hover: #a93420;
+      --signal-ink: #fffaf3;
+      --quiet: #e8e9e0;
+      --focus: #236b52;
+      font-family: var(--font-body);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
     }
-    countdown.innerHTML = 'Redirecting in <strong>' + remaining + '</strong> second' + (remaining === 1 ? '' : 's') + '…';
-    remaining--;
-    setTimeout(tick, 1000);
-  }
-  tick();
 
-  function escapeHtml(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-  function escapeAttr(s) {
-    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-  }
-})();
-</script>
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #171b18;
+      --panel: #202622;
+      --ink: #f0f0e8;
+      --ink-soft: #d0d6cf;
+      --muted: #a4afa6;
+      --line: #404b43;
+      --line-strong: #5a695e;
+      --signal: #ef765c;
+      --signal-hover: #ff917a;
+      --signal-ink: #23140f;
+      --quiet: #2a332d;
+      --focus: #98d1ad;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      padding: clamp(16px, 4vw, 48px);
+      display: grid;
+      place-items: center;
+      background: var(--page);
+      color: var(--ink);
+    }
+
+    button, a { font: inherit; }
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 4px;
+    }
+
+    .page-shell {
+      width: min(100%, 850px);
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-top: 5px solid var(--signal);
+    }
+
+    .masthead {
+      min-height: 66px;
+      padding: 16px clamp(18px, 4vw, 36px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wordmark {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 12px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .wordmark strong {
+      font-size: 1rem;
+      letter-spacing: -.06em;
+      font-weight: 800;
+    }
+
+    .wordmark span, .theme-toggle, .eyebrow, .field-label, .destination-host,
+    .timer-unit, .route-stamp, .footer-note {
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+    }
+
+    .wordmark span {
+      color: var(--muted);
+      font-size: .65rem;
+    }
+
+    .theme-toggle {
+      flex: 0 0 auto;
+      padding: 8px 10px;
+      color: var(--ink-soft);
+      background: transparent;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: .62rem;
+      transition: color .15s ease, border-color .15s ease;
+    }
+
+    .theme-toggle:hover { color: var(--signal); border-color: var(--signal); }
+
+    .handoff {
+      padding: clamp(24px, 5vw, 48px) clamp(18px, 5vw, 44px) 40px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .65rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 8px;
+      background: var(--focus);
+      border-radius: 50%;
+    }
+
+    .handoff[data-state="error"] .status-dot { background: var(--signal); }
+
+    .route-stamp {
+      margin-left: auto;
+      padding: 5px 7px;
+      color: var(--signal);
+      border: 1px solid var(--line-strong);
+      font-size: .58rem;
+      white-space: nowrap;
+    }
+
+    .route-layout {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(205px, 245px);
+      gap: clamp(24px, 5vw, 54px);
+      align-items: stretch;
+    }
+
+    .intro { padding: 0 0 28px; }
+
+    h1 {
+      max-width: 11ch;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 680;
+      letter-spacing: -.065em;
+      line-height: .99;
+    }
+
+    .subtitle {
+      max-width: 43ch;
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: clamp(.94rem, 1.5vw, 1.05rem);
+      line-height: 1.65;
+    }
+
+    .destination {
+      margin-top: 8px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .field-heading {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .field-label, .destination-host {
+      font-size: .62rem;
+    }
+
+    .field-label { color: var(--muted); }
+    .destination-host { color: var(--ink-soft); text-align: right; overflow-wrap: anywhere; }
+
+    .target {
+      min-height: 70px;
+      padding: 13px 15px;
+      display: flex;
+      align-items: center;
+      background: var(--quiet);
+      border-left: 3px solid var(--signal);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: .78rem;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .target a {
+      color: var(--ink);
+      text-decoration-color: var(--signal);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .target a:hover { color: var(--signal); }
+    .handoff[data-state="error"] .target { border-left-color: var(--signal); }
+    .error-note { color: var(--signal); }
+
+    .timer-stage {
+      padding-left: clamp(20px, 3vw, 30px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-left: 1px dashed var(--line-strong);
+    }
+
+    .timer-heading {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: .62rem;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .timer-reading {
+      margin: 13px 0 4px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      color: var(--signal);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-reading output {
+      font-size: clamp(3.1rem, 7vw, 4.45rem);
+      letter-spacing: -.09em;
+      line-height: .95;
+    }
+
+    .timer-unit { color: var(--muted); font-size: .58rem; }
+
+    .countdown-copy {
+      min-height: 3.3em;
+      margin: 8px 0 10px;
+      color: var(--ink-soft);
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .pause-button {
+      min-height: 36px;
+      padding: 7px 0;
+      color: var(--ink-soft);
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line-strong);
+      cursor: pointer;
+      text-align: left;
+      font-size: .8rem;
+    }
+
+    .pause-button:hover { color: var(--signal); border-color: var(--signal); }
+
+    .progress-track {
+      height: 7px;
+      margin: 18px 0 22px;
+      overflow: hidden;
+      background: var(--quiet);
+      border: 1px solid var(--line);
+    }
+
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--signal);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform .35s linear;
+    }
+
+    .primary-link {
+      min-height: 48px;
+      padding: 12px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--signal-ink);
+      background: var(--signal);
+      border: 1px solid var(--signal);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 650;
+      transition: background-color .15s ease, border-color .15s ease;
+    }
+
+    .primary-link:hover { background: var(--signal-hover); border-color: var(--signal-hover); }
+    .primary-link svg { width: 17px; height: 17px; flex: 0 0 auto; }
+
+    .page-footer {
+      padding: 16px clamp(18px, 4vw, 36px);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-note { color: var(--muted); font-size: .58rem; line-height: 1.5; }
+    .footer-note a { color: var(--ink-soft); text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+    .footer-note a:hover { color: var(--signal); }
+
+    .noscript-note {
+      margin: 16px clamp(18px, 4vw, 36px);
+      color: var(--signal);
+      font-size: .85rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 650px) {
+      body { place-items: start center; padding: 12px; }
+      .page-shell { margin: 4vh auto 0; }
+      .masthead { min-height: 58px; }
+      .wordmark { gap: 8px; }
+      .wordmark span { font-size: .56rem; }
+      .route-layout { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+      .intro { padding-bottom: 0; }
+      h1 { max-width: 13ch; }
+      .timer-stage {
+        padding: 20px 0 0;
+        border-left: 0;
+        border-top: 1px dashed var(--line-strong);
+      }
+      .timer-reading { margin-top: 10px; }
+      .timer-reading output { font-size: 3.75rem; }
+      .countdown-copy { min-height: auto; }
+      .primary-link { width: 100%; }
+    }
+
+    @media (max-width: 370px) {
+      .route-stamp { font-size: .5rem; }
+      .eyebrow { font-size: .57rem; }
+      .page-footer { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) { saved = null; }
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = saved === 'dark' || saved === 'light' ? saved : (prefersDark ? 'dark' : 'light');
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SMM1F9F9C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2SMM1F9F9C');
+  </script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead">
+      <a class="wordmark" href="https://lzve.living-the.life/" aria-label="LZVE.ly home">
+        <strong>LZVE.ly</strong>
+        <span>link relay</span>
+      </a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">LIGHT</button>
+    </header>
+
+    <main class="handoff" id="handoff" data-state="loading" aria-labelledby="title">
+      <p class="eyebrow">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="route-status">READING LINK</span>
+        <span class="route-stamp">ROUTE / 01</span>
+      </p>
+
+      <div class="route-layout">
+        <div class="route-main">
+          <section class="intro">
+            <h1 id="title">On to the next page.</h1>
+            <p class="subtitle" id="subtitle">Your browser will continue to the destination below.</p>
+          </section>
+
+          <section class="destination" aria-label="Redirect destination">
+            <div class="field-heading">
+              <span class="field-label">Destination</span>
+              <span class="destination-host" id="destination-host">WAITING FOR ADDRESS</span>
+            </div>
+            <div class="target" id="target">Reading the address from this link…</div>
+          </section>
+        </div>
+
+        <section class="timer-stage" id="timer-stage" aria-label="Automatic redirect">
+          <div>
+            <p class="timer-heading">Automatic handoff</p>
+            <div class="timer-reading">
+              <output id="remaining" aria-label="Seconds remaining">07</output>
+              <span class="timer-unit">SECONDS</span>
+            </div>
+            <p class="countdown-copy" id="countdown">The destination will open shortly.</p>
+            <button class="pause-button" id="pause-button" type="button" aria-pressed="false">Pause timer</button>
+            <p class="sr-only" id="timer-status" aria-live="polite"></p>
+          </div>
+
+          <div>
+            <div class="progress-track" id="progress-track" role="progressbar" aria-label="Redirect countdown" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <a class="primary-link" id="go-now" href="#">
+              <span>Open destination now</span>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                <path d="M4 10h11M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+              </svg>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <noscript><p class="noscript-note">JavaScript is needed to follow this redirect. Enable it, or return to the page that sent you here.</p></noscript>
+
+    <footer class="page-footer">
+      <span class="footer-note">A small handoff before the next URL.</span>
+      <span class="footer-note">Powered by <a href="https://lzve.living-the.life/">LZVE.ly</a></span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var params = new URLSearchParams(window.location.search);
+      var rawUrl = params.get('to') || params.get('url') || params.get('redirect') || params.get('target') || params.get('link');
+      var delay = parseInt(params.get('delay') || params.get('d') || '7', 10);
+      if (isNaN(delay) || delay < 0) delay = 3;
+      if (delay > 30) delay = 30;
+
+      var handoff = document.getElementById('handoff');
+      var title = document.getElementById('title');
+      var subtitle = document.getElementById('subtitle');
+      var target = document.getElementById('target');
+      var destinationHost = document.getElementById('destination-host');
+      var routeStatus = document.getElementById('route-status');
+      var timerStage = document.getElementById('timer-stage');
+      var remainingOutput = document.getElementById('remaining');
+      var countdown = document.getElementById('countdown');
+      var pauseButton = document.getElementById('pause-button');
+      var timerStatus = document.getElementById('timer-status');
+      var progressTrack = document.getElementById('progress-track');
+      var progressFill = document.getElementById('progress-fill');
+      var goNow = document.getElementById('go-now');
+      var themeToggle = document.getElementById('theme-toggle');
+
+      var allowedHosts = new Set([
+        'beta.music.apple.com',
+        'discord.com',
+        'github.com',
+        'lzvesky.yrs.wtf',
+        'orcid.org',
+        'sky-link-in-bio.pages.dev',
+        'snapchat.com',
+        'www.tiktok.com',
+        'x.com'
+      ]);
+
+      function setError(heading, detail, host, message) {
+        handoff.dataset.state = 'error';
+        routeStatus.textContent = 'CHECK DESTINATION';
+        title.textContent = heading;
+        subtitle.textContent = detail;
+        destinationHost.textContent = host || 'NOT AVAILABLE';
+        target.textContent = message;
+        target.classList.add('error-note');
+        timerStage.hidden = true;
+        document.title = heading + ' — LZVE.ly';
+      }
+
+      themeToggle.addEventListener('click', function () {
+        var nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = nextTheme;
+        themeToggle.textContent = nextTheme === 'dark' ? 'DARK' : 'LIGHT';
+        themeToggle.setAttribute('aria-label', 'Switch to ' + (nextTheme === 'dark' ? 'light' : 'dark') + ' theme');
+        try { localStorage.setItem('theme', nextTheme); } catch (e) { /* Keep the current page usable when storage is blocked. */ }
+      });
+      themeToggle.textContent = document.documentElement.dataset.theme === 'dark' ? 'DARK' : 'LIGHT';
+      themeToggle.setAttribute('aria-label', 'Switch to ' + (document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark') + ' theme');
+
+      if (!rawUrl) {
+        setError('No destination found.', 'This link needs a destination before it can continue.', 'MISSING URL', 'Add a destination with ?to= or ?url=.');
+        return;
+      }
+
+      var destination;
+      try { destination = new URL(rawUrl); } catch (e) { destination = null; }
+      if (!destination || (destination.protocol !== 'http:' && destination.protocol !== 'https:')) {
+        setError('That address will not work.', 'Only valid HTTP or HTTPS web addresses can be opened.', 'INVALID ADDRESS', rawUrl);
+        return;
+      }
+
+      if (!allowedHosts.has(destination.hostname.toLowerCase())) {
+        setError('This host is not on the list.', 'The relay only opens hosts already linked from LZVE.', destination.hostname, destination.href);
+        return;
+      }
+
+      handoff.dataset.state = 'ready';
+      routeStatus.textContent = 'READY TO HAND OFF';
+      destinationHost.textContent = destination.hostname;
+      target.replaceChildren();
+      var destinationLink = document.createElement('a');
+      destinationLink.href = destination.href;
+      destinationLink.rel = 'noopener noreferrer';
+      destinationLink.textContent = destination.href;
+      target.appendChild(destinationLink);
+      goNow.href = destination.href;
+      goNow.rel = 'noopener noreferrer';
+      document.title = 'On to the next page — LZVE.ly';
+      progressTrack.setAttribute('aria-valuemax', String(Math.max(delay, 1)));
+
+      var initialDelay = delay;
+      var remaining = delay;
+      var timerId = null;
+      var paused = false;
+
+      function renderTimer() {
+        remainingOutput.textContent = String(Math.max(remaining, 0)).padStart(2, '0');
+        var elapsed = initialDelay - remaining;
+        var ratio = initialDelay > 0 ? Math.min(Math.max(elapsed / initialDelay, 0), 1) : 1;
+        progressFill.style.transform = 'scaleX(' + ratio + ')';
+        progressTrack.setAttribute('aria-valuenow', String(Math.max(elapsed, 0)));
+        countdown.textContent = remaining === 1 ? 'Leaving in 1 second, unless you choose to go now.' : 'Leaving in ' + remaining + ' seconds, unless you choose to go now.';
+      }
+
+      function tick() {
+        if (paused) return;
+        if (remaining <= 1) {
+          remaining = 0;
+          renderTimer();
+          window.location.replace(destination.href);
+          return;
+        }
+        remaining -= 1;
+        renderTimer();
+        timerId = window.setTimeout(tick, 1000);
+      }
+
+      pauseButton.addEventListener('click', function () {
+        if (paused) {
+          paused = false;
+          pauseButton.textContent = 'Pause timer';
+          pauseButton.setAttribute('aria-pressed', 'false');
+          timerStatus.textContent = 'Countdown resumed.';
+          timerId = window.setTimeout(tick, 1000);
+        } else {
+          paused = true;
+          window.clearTimeout(timerId);
+          pauseButton.textContent = 'Resume timer';
+          pauseButton.setAttribute('aria-pressed', 'true');
+          timerStatus.textContent = 'Countdown paused.';
+          countdown.textContent = 'Paused. Choose when you want to continue.';
+        }
+      });
+
+      renderTimer();
+      timerId = window.setTimeout(tick, 1000);
+    })();
+  </script>
 </body>
 </html>
